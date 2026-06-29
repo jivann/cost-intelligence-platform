@@ -1,9 +1,5 @@
 from fastapi import FastAPI
-from backend.database import engine
-from backend import models
 from backend.routers import users
-
-models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Multi-Cloud Cost Intelligence Platform",
