@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import func
-from typing import List
 from backend.database import get_db
-from backend.models import CloudResource, CostRecord, User
+from backend.models import CloudResource, User
 from backend.routers.resources import get_current_user
+from backend.cache import get_cached, set_cached
 
 router = APIRouter(prefix="/api/v1/analytics", tags=["Analytics"])
 
@@ -13,6 +12,12 @@ def get_cost_summary(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    cache_key = f"analytics:summary:{current_user.id}"
+    cached = get_cached(cache_key)
+    if cached:
+        cached["cached"] = True
+        return cached
+
     resources = db.query(CloudResource).filter(
         CloudResource.owner_id == current_user.id
     ).all()
@@ -22,20 +27,29 @@ def get_cost_summary(
     active_count = sum(1 for r in resources if r.status == "active")
     stopped_count = sum(1 for r in resources if r.status == "stopped")
 
-    return {
+    result = {
         "total_resources": len(resources),
         "active_resources": active_count,
         "stopped_resources": stopped_count,
         "total_hourly_cost": round(total_hourly, 4),
         "total_monthly_cost": round(total_monthly, 2),
-        "total_yearly_cost": round(total_monthly * 12, 2)
+        "total_yearly_cost": round(total_monthly * 12, 2),
+        "cached": False
     }
+
+    set_cached(cache_key, result, ttl=300)
+    return result
 
 @router.get("/by-provider")
 def get_cost_by_provider(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    cache_key = f"analytics:by-provider:{current_user.id}"
+    cached = get_cached(cache_key)
+    if cached:
+        return cached
+
     resources = db.query(CloudResource).filter(
         CloudResource.owner_id == current_user.id
     ).all()
@@ -54,13 +68,20 @@ def get_cost_by_provider(
     for p in provider_costs:
         provider_costs[p]["monthly_cost"] = round(provider_costs[p]["monthly_cost"], 2)
 
-    return list(provider_costs.values())
+    result = list(provider_costs.values())
+    set_cached(cache_key, result, ttl=300)
+    return result
 
 @router.get("/by-region")
 def get_cost_by_region(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    cache_key = f"analytics:by-region:{current_user.id}"
+    cached = get_cached(cache_key)
+    if cached:
+        return cached
+
     resources = db.query(CloudResource).filter(
         CloudResource.owner_id == current_user.id
     ).all()
@@ -80,13 +101,20 @@ def get_cost_by_region(
     for reg in region_costs:
         region_costs[reg]["monthly_cost"] = round(region_costs[reg]["monthly_cost"], 2)
 
-    return list(region_costs.values())
+    result = list(region_costs.values())
+    set_cached(cache_key, result, ttl=300)
+    return result
 
 @router.get("/by-type")
 def get_cost_by_type(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    cache_key = f"analytics:by-type:{current_user.id}"
+    cached = get_cached(cache_key)
+    if cached:
+        return cached
+
     resources = db.query(CloudResource).filter(
         CloudResource.owner_id == current_user.id
     ).all()
@@ -105,7 +133,9 @@ def get_cost_by_type(
     for t in type_costs:
         type_costs[t]["monthly_cost"] = round(type_costs[t]["monthly_cost"], 2)
 
-    return list(type_costs.values())
+    result = list(type_costs.values())
+    set_cached(cache_key, result, ttl=300)
+    return result
 
 @router.get("/top-expensive")
 def get_top_expensive(
@@ -113,11 +143,16 @@ def get_top_expensive(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    cache_key = f"analytics:top-expensive:{current_user.id}:{limit}"
+    cached = get_cached(cache_key)
+    if cached:
+        return cached
+
     resources = db.query(CloudResource).filter(
         CloudResource.owner_id == current_user.id
     ).order_by(CloudResource.monthly_cost.desc()).limit(limit).all()
 
-    return [
+    result = [
         {
             "id": r.id,
             "name": r.name,
@@ -128,3 +163,6 @@ def get_top_expensive(
         }
         for r in resources
     ]
+
+    set_cached(cache_key, result, ttl=300)
+    return result
