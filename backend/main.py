@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from backend.routers import users
+from backend.routers import users, resources
 
 app = FastAPI(
     title="Multi-Cloud Cost Intelligence Platform",
@@ -8,6 +8,7 @@ app = FastAPI(
 )
 
 app.include_router(users.router)
+app.include_router(resources.router)
 
 @app.get("/")
 def root():
