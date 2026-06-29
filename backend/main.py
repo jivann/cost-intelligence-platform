@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from backend.database import engine
 from backend import models
+from backend.routers import users
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -9,6 +10,8 @@ app = FastAPI(
     description="Enterprise API for cloud cost analysis",
     version="0.1.0"
 )
+
+app.include_router(users.router)
 
 @app.get("/")
 def root():
