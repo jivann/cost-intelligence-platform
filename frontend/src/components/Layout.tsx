@@ -25,7 +25,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen bg-gray-50 font-sans">
-      {/* Sidebar */}
       <div className="w-52 bg-white border-r border-gray-200 flex flex-col">
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center space-x-2">
@@ -68,9 +67,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </nav>
       </div>
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
         <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
           <div className="flex items-center bg-gray-100 rounded-lg px-3 py-2 w-64">
             <span className="text-gray-400 text-sm">Search...</span>
@@ -93,7 +90,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        {/* Page Content */}
         <main className="flex-1 overflow-auto">
           {children}
         </main>
