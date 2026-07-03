@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, AreaChart, Area } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import Layout from '../components/Layout';
 import { analyticsService } from '../api/services';
 import { TrendingDown, TrendingUp, DollarSign, Percent, Shield, AlertTriangle } from 'lucide-react';
@@ -46,11 +46,9 @@ const costByEnv = [
 
 export default function Dashboard() {
   const [summary, setSummary] = useState<any>(null);
-  const [byProvider, setByProvider] = useState<any[]>([]);
 
   useEffect(() => {
     analyticsService.getSummary().then(setSummary);
-    analyticsService.getByProvider().then(setByProvider);
   }, []);
 
   const kpis = [
@@ -201,7 +199,7 @@ export default function Dashboard() {
         <div className="bg-white border border-gray-200 rounded-xl p-6">
           <h2 className="text-base font-semibold text-gray-900 mb-4">Cost by Environment</h2>
           <div className="space-y-3">
-            {costByEnv.map((item, i) => (
+            {costByEnv.map((item) => (
               <div key={item.name} className="flex items-center space-x-4">
                 <span className="text-sm text-gray-600 w-28">{item.name}</span>
                 <div className="flex-1 bg-gray-100 rounded-full h-2">
