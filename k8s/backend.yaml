@@ -12,9 +12,19 @@ spec:
       labels:
         app: backend
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 100
+        runAsUser: 100
+        fsGroup: 1000
       containers:
       - name: backend
-        image: cost-api:day19
+        image: cost-backend:day22
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         envFrom:
         - configMapRef:
             name: cost-platform-config

@@ -22,9 +22,13 @@ spec:
       labels:
         app: postgres
     spec:
+      securityContext:
+        fsGroup: 999
       containers:
       - name: postgres
         image: postgres:15-alpine
+        securityContext:
+          allowPrivilegeEscalation: false
         envFrom:
         - secretRef:
             name: cost-platform-secrets

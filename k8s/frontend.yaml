@@ -12,15 +12,24 @@ spec:
       labels:
         app: frontend
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        fsGroup: 101
       containers:
       - name: frontend
-        image: cost-frontend:day20
+        image: cost-frontend:day22
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         ports:
-        - containerPort: 80
+        - containerPort: 8080
         readinessProbe:
           httpGet:
             path: /
-            port: 80
+            port: 8080
           initialDelaySeconds: 3
           periodSeconds: 5
 ---
@@ -34,5 +43,5 @@ spec:
     app: frontend
   ports:
     - port: 80
-      targetPort: 80
+      targetPort: 8080
       nodePort: 30000
