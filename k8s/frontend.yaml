@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
+  namespace: frontend
 spec:
   replicas: 2
   selector:
@@ -12,13 +13,14 @@ spec:
       labels:
         app: frontend
     spec:
+      serviceAccountName: frontend-sa
       securityContext:
         runAsNonRoot: true
         runAsUser: 101
         fsGroup: 101
       containers:
       - name: frontend
-        image: cost-frontend:day22
+        image: cost-frontend:day24c
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -44,6 +46,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: frontend-service
+  namespace: frontend
 spec:
   type: NodePort
   selector:

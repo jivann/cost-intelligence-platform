@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: cost-platform-config
 data:
-  POSTGRES_HOST: "postgres-service"
+  POSTGRES_HOST: "postgres-service.data.svc.cluster.local"
   POSTGRES_PORT: "5432"
-  REDIS_HOST: "redis-service"
+  REDIS_HOST: "redis-service.data.svc.cluster.local"
   REDIS_PORT: "6379"
