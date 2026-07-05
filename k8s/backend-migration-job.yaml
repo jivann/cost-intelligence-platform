@@ -2,12 +2,14 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: run-migrations
+  namespace: backend
 spec:
   template:
     spec:
+      serviceAccountName: backend-sa
       containers:
       - name: migrate
-        image: cost-api:day19
+        image: cost-backend:day22
         command: ["alembic", "upgrade", "head"]
         envFrom:
         - configMapRef:
