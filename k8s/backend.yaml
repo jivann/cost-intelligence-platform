@@ -20,7 +20,7 @@ spec:
         fsGroup: 1000
       containers:
       - name: backend
-        image: cost-backend:day22
+        image: cost-backend:day27
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
