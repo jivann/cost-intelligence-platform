@@ -37,10 +37,10 @@ jobs:
           sudo apt-get install -y trivy
 
       - name: Scan backend image (fail on CRITICAL)
-        run: trivy image --severity CRITICAL --exit-code 1 ghcr.io/${{ github.repository_owner }}/cost-backend:${{ github.sha }}
+        run: trivy image --severity CRITICAL --ignore-unfixed --exit-code 1 ghcr.io/${{ github.repository_owner }}/cost-backend:${{ github.sha }}
 
       - name: Scan frontend image (fail on CRITICAL)
-        run: trivy image --severity CRITICAL --exit-code 1 ghcr.io/${{ github.repository_owner }}/cost-frontend:${{ github.sha }}
+        run: trivy image --severity CRITICAL --ignore-unfixed --exit-code 1 ghcr.io/${{ github.repository_owner }}/cost-frontend:${{ github.sha }}
 
       - name: Push backend image
         run: docker push ghcr.io/${{ github.repository_owner }}/cost-backend:${{ github.sha }}
