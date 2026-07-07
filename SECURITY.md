@@ -17,3 +17,6 @@ Run before deploying any new image build:
 trivy image --severity CRITICAL,HIGH <image>:<tag>
 ```
 Fix any CVE with an available `Fixed Version`. Document and accept any CVE with `NO FIX AVAILABLE`, and re-check on next scan.
+
+## Open Item (tracked for post-Phase-4)
+- [ ] Migrate backend Dockerfile from python:3.11-slim (Debian) to python:3.11-alpine to eliminate perl-base CRITICAL CVEs (CVE-2026-42496, CVE-2026-8376). In progress on branch `feature/alpine-hardening`. Not blocking current functionality — CVEs are in an unused OS component (Perl), not reachable via application code.
