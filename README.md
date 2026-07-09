@@ -2,8 +2,11 @@
 
 An enterprise-style multi-cloud cost intelligence platform, built and hardened through a full production-readiness process — real Docker, Kubernetes, security, and reliability engineering, not just a working demo.
 
-**Live:** [your Render URL]
-**Repo:** [your GitHub URL]
+**Live:** https://cost-intelligence-platform-frontend.onrender.com
+**Repo:** https://github.com/jivann/cost-intelligence-platform
+**Demo credentials:** `admin` / `testpass123`
+
+> Note: hosted on Render's free tier — the backend may take 30-60 seconds to respond on first load after a period of inactivity (cold start). This is a hosting-tier limitation, not an application bug.
 
 ---
 
@@ -138,7 +141,7 @@ cost-intelligence-platform/
 - **Source control:** GitHub
 - **CI/CD:** GitHub Actions — automated build and deploy on push
 - **Production hosting:** Render
-- **Live environment:** [your Render URL]
+- **Live environment:** https://cost-intelligence-platform-frontend.onrender.com
 
 ---
 
@@ -155,8 +158,8 @@ If you're evaluating this as proof of capability rather than as a finished produ
 
 ## 📫 Contact
 
-- **GitHub:** [your GitHub URL]
-- **Portfolio / Live Demo:** [your Render URL]
+- **GitHub:** https://github.com/jivann/cost-intelligence-platform
+- **Portfolio / Live Demo:** https://cost-intelligence-platform-frontend.onrender.com
 
 ---
 
