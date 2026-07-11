@@ -11,33 +11,36 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
+    const cleanUsername = username.trim();
+    const cleanEmail = email.trim();
+    const cleanPassword = password.trim();
     try {
       if (isLogin) {
         const formData = new URLSearchParams();
-        formData.append('username', username);
-        formData.append('password', password);
+        formData.append('username', cleanUsername);
+        formData.append('password', cleanPassword);
         const response = await apiClient.post('/api/v1/login', formData, {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         });
         localStorage.setItem('access_token', response.data.access_token);
         navigate('/dashboard');
       } else {
-        await apiClient.post('/api/v1/register', { email, username, password });
+        await apiClient.post('/api/v1/register', { email: cleanEmail, username: cleanUsername, password: cleanPassword });
         setIsLogin(true);
         setError('');
         alert('Account created! Please sign in.');
       }
     } catch (err: any) {
-      setError(isLogin ? 'Invalid username or password' : 'Registration failed. Username or email may already exist.');
+      const detail = err?.response?.data?.detail;
+      setError(detail || (isLogin ? 'Login failed — please try again.' : 'Registration failed — please try again.'));
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center">
       <div className="w-full max-w-md">
