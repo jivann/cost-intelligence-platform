@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import apiClient from '../api/client';
 
 export default function Login() {
+  const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -14,16 +16,23 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      const formData = new URLSearchParams();
-      formData.append('username', username);
-      formData.append('password', password);
-      const response = await apiClient.post('/api/v1/login', formData, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      });
-      localStorage.setItem('access_token', response.data.access_token);
-      navigate('/dashboard');
-    } catch (err) {
-      setError('Invalid username or password');
+      if (isLogin) {
+        const formData = new URLSearchParams();
+        formData.append('username', username);
+        formData.append('password', password);
+        const response = await apiClient.post('/api/v1/login', formData, {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        });
+        localStorage.setItem('access_token', response.data.access_token);
+        navigate('/dashboard');
+      } else {
+        await apiClient.post('/api/v1/register', { email, username, password });
+        setIsLogin(true);
+        setError('');
+        alert('Account created! Please sign in.');
+      }
+    } catch (err: any) {
+      setError(isLogin ? 'Invalid username or password' : 'Registration failed. Username or email may already exist.');
     } finally {
       setLoading(false);
     }
@@ -41,14 +50,43 @@ export default function Login() {
         </div>
 
         <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8">
-          <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Toggle */}
+          <div className="flex bg-gray-800 rounded-lg p-1 mb-6">
+            <button
+              onClick={() => { setIsLogin(true); setError(''); }}
+              className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${isLogin ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => { setIsLogin(false); setError(''); }}
+              className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${!isLogin ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}
+            >
+              Sign Up
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {!isLogin && (
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500"
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">Username</label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors"
+                className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500"
                 placeholder="Enter your username"
                 required
               />
@@ -59,7 +97,7 @@ export default function Login() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors"
+                className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500"
                 placeholder="Enter your password"
                 required
               />
@@ -74,7 +112,7 @@ export default function Login() {
               disabled={loading}
               className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Create Account'}
             </button>
           </form>
         </div>
