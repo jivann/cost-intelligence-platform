@@ -5,6 +5,7 @@ An enterprise-style multi-cloud cost intelligence platform, built and hardened t
 **Live:** https://cost-intelligence-platform-frontend.onrender.com
 **Repo:** https://github.com/jivann/cost-intelligence-platform
 **Demo credentials:** `admin` / `testpass123`
+**fiver gigs:** http://www.fiverr.com/s/e6gPk74
 
 > Note: hosted on Render's free tier — the backend may take 30-60 seconds to respond on first load after a period of inactivity (cold start). This is a hosting-tier limitation, not an application bug.
 
