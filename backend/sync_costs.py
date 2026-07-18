@@ -14,8 +14,13 @@ from backend.database import SessionLocal
 from backend.models import CloudResource, CostRecord, User
 from backend.providers.mock_provider import MockCostProvider
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 SYNC_DAYS_BACK = 30
-TARGET_USERNAME = "day8user"  # confirmed actual user in dev DB
+TARGET_USERNAME = os.getenv("SYNC_TARGET_USERNAME", "day8user")
 
 def sync():
     db = SessionLocal()
