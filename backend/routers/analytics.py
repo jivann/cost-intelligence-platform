@@ -166,3 +166,35 @@ def get_top_expensive(
 
     set_cached(cache_key, result, ttl=300)
     return result
+@router.get("/trend")
+def get_cost_trend(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    from backend.models import CostRecord
+    from collections import defaultdict
+
+    cache_key = f"analytics:trend:{current_user.id}"
+    cached = get_cached(cache_key)
+    if cached:
+        return cached
+
+    records = (
+        db.query(CostRecord, CloudResource.provider)
+        .join(CloudResource, CostRecord.resource_id == CloudResource.id)
+        .filter(CloudResource.owner_id == current_user.id)
+        .all()
+    )
+
+    monthly = defaultdict(lambda: defaultdict(float))
+    for record, provider in records:
+        month_key = record.period_start.strftime("%Y-%m")
+        monthly[month_key][provider] += record.amount
+
+    result = [
+        {"month": month, **{p: round(v, 2) for p, v in providers.items()}}
+        for month, providers in sorted(monthly.items())
+    ]
+
+    set_cached(cache_key, result, ttl=300)
+    return result
