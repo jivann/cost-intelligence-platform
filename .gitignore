@@ -11,3 +11,5 @@ k8s/*secret*.yaml
 k8s/*-secret.yaml
 !k8s/sealed-secrets.yaml
 !k8s/sealed-secrets.yaml
+report.json
+repos.txt
