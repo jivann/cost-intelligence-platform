@@ -198,3 +198,78 @@ def get_cost_trend(
 
     set_cached(cache_key, result, ttl=300)
     return result
+@router.get("/anomalies")
+def get_anomalies(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    from backend.models import CostRecord
+    from collections import defaultdict
+    from datetime import datetime, timezone
+
+    cache_key = f"analytics:anomalies:{current_user.id}"
+    cached = get_cached(cache_key)
+    if cached:
+        return cached
+
+    resources = db.query(CloudResource).filter(
+        CloudResource.owner_id == current_user.id
+    ).all()
+
+    anomalies = []
+
+    for resource in resources:
+        records = (
+            db.query(CostRecord)
+            .filter(CostRecord.resource_id == resource.id)
+            .order_by(CostRecord.period_start.desc())
+            .limit(8)
+            .all()
+        )
+
+        if len(records) < 8:
+            continue  # not enough history for a fair comparison
+
+        latest = records[0]
+        trailing_week = records[1:8]
+        avg_amount = sum(r.amount for r in trailing_week) / len(trailing_week)
+
+        if avg_amount == 0:
+            continue
+
+        pct_above = ((latest.amount - avg_amount) / avg_amount) * 100
+
+        if pct_above < 40:
+            continue  # not anomalous enough to flag
+
+        if pct_above >= 100:
+            severity = "critical"
+        elif pct_above >= 65:
+            severity = "warning"
+        else:
+            severity = "info"
+
+        anomalies.append({
+            "resource_id": resource.resource_id,
+            "resource_name": resource.name,
+            "provider": resource.provider,
+            "severity": severity,
+            "latest_amount": round(latest.amount, 2),
+            "expected_amount": round(avg_amount, 2),
+            "pct_above_expected": round(pct_above, 1),
+            "detected_at": latest.period_start.isoformat(),
+        })
+
+    anomalies.sort(key=lambda a: a["pct_above_expected"], reverse=True)
+
+    result = {
+        "total": len(anomalies),
+        "critical": sum(1 for a in anomalies if a["severity"] == "critical"),
+        "warning": sum(1 for a in anomalies if a["severity"] == "warning"),
+        "info": sum(1 for a in anomalies if a["severity"] == "info"),
+        "anomalies": anomalies,
+        "method": "Rule-based: flags resources whose most recent daily cost exceeds their trailing 7-day average by 40%+. Not ML-based.",
+    }
+
+    set_cached(cache_key, result, ttl=300)
+    return result
