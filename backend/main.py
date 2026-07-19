@@ -38,6 +38,6 @@ app.include_router(analytics.router)
 def root(request: Request):
     return {"message": "Cost Intelligence Platform API", "status": "running", "version": "0.1.0"}
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 def health():
     return {"status": "healthy"}
