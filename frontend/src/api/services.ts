@@ -32,8 +32,16 @@ export const analyticsService = {
     const response = await apiClient.get('/api/v1/analytics/by-region');
     return response.data;
   },
+  getByType: async () => {
+    const response = await apiClient.get('/api/v1/analytics/by-type');
+    return response.data;
+  },
   getTopExpensive: async () => {
     const response = await apiClient.get('/api/v1/analytics/top-expensive');
+    return response.data;
+  },
+  getTrend: async () => {
+    const response = await apiClient.get('/api/v1/analytics/trend');
     return response.data;
   }
 };
