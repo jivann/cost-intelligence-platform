@@ -1,5 +1,7 @@
 # Cost Intelligence Platform
 
+[![CI](https://github.com/jivann/cost-intelligence-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/jivann/cost-intelligence-platform/actions/workflows/ci.yml)
+
 An enterprise-style multi-cloud cost intelligence platform, built and hardened through a full production-readiness process — real Docker, Kubernetes, security, and reliability engineering, not just a working demo.
 
 **Live:** https://cost-intelligence-platform-frontend.onrender.com
