@@ -15,6 +15,19 @@ Cost Intelligence Platform is a full-stack application designed to give organiza
 
 ---
 
+## 📸 Screenshots
+
+**Dashboard** — real-time cost data across cloud providers
+![Dashboard](docs/screenshots/dashboard.jpeg)
+
+**Anomaly Detection** — rule-based detection flagging a genuine cost spike
+![Anomalies](docs/screenshots/anomalies.jpeg)
+
+**Cost Analysis** — detailed cost breakdown, backed by real endpoints
+![Cost Analysis](docs/screenshots/cost-analysis.jpeg)
+
+---
+
 ## ✅ What's Actually Working Today
 
 - **User authentication** — JWT-based login/registration, secured against common auth mistakes (form-encoded login, hashed passwords, no plaintext credentials anywhere in the codebase or git history)
