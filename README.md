@@ -87,6 +87,23 @@ This is an honest, deliberate scope boundary — integrating real billing APIs a
 
 ---
 
+## 🚀 Getting Started (Demo Data Setup)
+
+To see the Dashboard and Anomalies features populated with realistic data on a fresh clone:
+
+1. **Register a user** via the app (or `POST /api/v1/register`) with the username `day8user` — this is the default target for the demo data script.
+   - Using a different username? Set `SYNC_TARGET_USERNAME=<your-username>` in your `.env` file first.
+
+2. **Run the combined setup script:**
+```bash
+   python -m backend.setup_demo_data
+```
+   This syncs 30 days of realistic mock cloud cost data and injects one deliberate cost spike so the Anomalies page has something real to detect.
+
+3. **Log in as that user** and visit the Dashboard and Anomalies pages — both are now populated with live, queryable data (not hardcoded frontend mocks).
+
+This is demo/dev tooling only — see [What's Actually Working Today](#-whats-actually-working-today) for what's real vs. synthetic.
+
 ## 🔒 Security & Hardening
 
 This is the part of the project that took the most deliberate engineering effort, done in stages:
