@@ -41,6 +41,7 @@ export default function Dashboard() {
   const [topExpensive, setTopExpensive] = useState<TopExpensive[]>([]);
   const [trend, setTrend] = useState<TrendPoint[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -55,12 +56,11 @@ export default function Dashboard() {
         setTopExpensive(topData);
         setTrend(trendData);
       })
+      .catch(() => {
+        setError('Unable to load dashboard data. The server may be unreachable — please try again shortly.');
+      })
       .finally(() => setLoading(false));
   }, []);
-
-  const providerKeys = trend.length > 0
-    ? Object.keys(trend[0]).filter((k) => k !== 'month')
-    : [];
 
   const kpis = [
     {
@@ -80,10 +80,24 @@ export default function Dashboard() {
     },
   ];
 
-  if (loading) {
+if (loading) {
     return (
       <Layout>
         <div className="p-6 text-gray-500">Loading real cost data…</div>
+      </Layout>
+    );
+  }
+
+const providerKeys = trend.length > 0 ? Object.keys(trend[0]).filter((k) => k !== 'month') : [];
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="p-6">
+          <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-red-800">
+            {error}
+          </div>
+        </div>
       </Layout>
     );
   }

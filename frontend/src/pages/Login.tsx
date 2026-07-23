@@ -34,9 +34,13 @@ const handleSubmit = async (e: React.FormEvent) => {
         setError('');
         alert('Account created! Please sign in.');
       }
-    } catch (err: any) {
-      const detail = err?.response?.data?.detail;
-      setError(detail || (isLogin ? 'Login failed — please try again.' : 'Registration failed — please try again.'));
+} catch (err: any) {
+      if (err.code === 'ECONNABORTED' || !err.response) {
+        setError('Cannot reach the server. Please check your connection and try again.');
+      } else {
+        const detail = err?.response?.data?.detail;
+        setError(detail || (isLogin ? 'Login failed — please try again.' : 'Registration failed — please try again.'));
+      }
     } finally {
       setLoading(false);
     }
