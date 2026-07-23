@@ -1,5 +1,6 @@
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { authService } from '../api/services';
+import { authService, analyticsService } from '../api/services';
 import {
   LayoutDashboard, BarChart2, Shield, Tag, AlertTriangle, Zap,
   RefreshCw, Settings, Bell, ChevronDown
@@ -10,13 +11,20 @@ const navItems = [
   { path: '/cost-analysis', label: 'Cost Analysis', icon: BarChart2 },
   { path: '/ri-optimization', label: 'RI Optimization', icon: Shield },
   { path: '/tag-governance', label: 'Tag Governance', icon: Tag },
-  { path: '/anomalies', label: 'Anomalies', icon: AlertTriangle, badge: 4 },
+  { path: '/anomalies', label: 'Anomalies', icon: AlertTriangle },
   { path: '/automation', label: 'Automation', icon: Zap },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const [anomalyCount, setAnomalyCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    analyticsService.getAnomalies()
+      .then((data) => setAnomalyCount(data.total))
+      .catch(() => setAnomalyCount(null)); // fail silently — badge just won't show
+  }, [location.pathname]); // re-check when navigating, so it stays fresh
 
   const handleLogout = () => {
     authService.logout();
@@ -42,6 +50,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
+            const showBadge = item.path === '/anomalies' && anomalyCount && anomalyCount > 0;
             return (
               <button
                 key={item.path}
@@ -56,9 +65,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <Icon size={16} />
                   <span>{item.label}</span>
                 </div>
-                {item.badge && (
+                {showBadge && (
                   <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {item.badge}
+                    {anomalyCount}
                   </span>
                 )}
               </button>
@@ -76,7 +85,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <RefreshCw size={18} className="text-gray-400 cursor-pointer hover:text-gray-600" />
             <div className="relative">
               <Bell size={18} className="text-gray-400 cursor-pointer hover:text-gray-600" />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">4</span>
+              {anomalyCount !== null && anomalyCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  {anomalyCount}
+                </span>
+              )}
             </div>
             <Settings size={18} className="text-gray-400 cursor-pointer hover:text-gray-600" />
             <button

@@ -43,8 +43,13 @@ export const analyticsService = {
   getTrend: async () => {
     const response = await apiClient.get('/api/v1/analytics/trend');
     return response.data;
+  },
+  getAnomalies: async () => {
+    const response = await apiClient.get('/api/v1/analytics/anomalies');
+    return response.data;
   }
 };
+
 
 export const resourceService = {
   getAll: async () => {
